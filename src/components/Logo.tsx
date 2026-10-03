@@ -19,7 +19,7 @@ export default function Logo({
         alt="FreshCart"
         width={160}
         height={31}
-        className={`${imgClassName} dark:hidden`}
+        className={`logo-variant logo-variant-light ${imgClassName}`}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -28,7 +28,7 @@ export default function Logo({
         aria-hidden="true"
         width={160}
         height={31}
-        className={`${imgClassName} hidden dark:block`}
+        className={`logo-variant logo-variant-dark ${imgClassName}`}
       />
     </Link>
   );

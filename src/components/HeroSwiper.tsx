@@ -45,7 +45,7 @@ export default function HeroSwiper() {
                 backgroundPosition: "center",
               }}
             >
-              <div className="absolute inset-0 bg-linear-to-r from-green-500/90 to-green-400/50" />
+              <div className="absolute inset-0 bg-linear-to-r from-green-800/90 via-green-600/40 to-transparent" />
               <div className="container-x relative z-10 text-white">
                 <span className="hero-copy hero-copy-1 inline-block rounded-full border border-white/40 bg-white/10 px-4 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm">
                   {s.badge}
