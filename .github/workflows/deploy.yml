@@ -35,6 +35,26 @@ jobs:
           # next.config.ts reads this to add basePath=/freshcart and assetPrefix.
           GITHUB_PAGES: "1"
 
+      # The upstream API (ecommerce.routemisr.com) is unreachable from GitHub's runners,
+      # so the build uses the id snapshot committed in src/data/route-ids.json.
+      - name: Refresh route id snapshot (non-fatal)
+        continue-on-error: true
+        run: |
+          curl -sS --max-time 30 "https://ecommerce.routemisr.com/api/v1/products?limit=200" -o /tmp/p.json || exit 0
+          node -e '
+            const fs = require("fs");
+            const snap = JSON.parse(fs.readFileSync("src/data/route-ids.json", "utf8"));
+            const live = JSON.parse(fs.readFileSync("/tmp/p.json", "utf8")).data ?? [];
+            const ids = live.map((p) => p.id ?? p._id).filter(Boolean);
+            if (ids.length > snap.products.length) {
+              snap.products = [...new Set(ids)];
+              fs.writeFileSync("src/data/route-ids.json", JSON.stringify(snap, null, 2));
+              console.log("snapshot updated:", ids.length);
+            } else {
+              console.log("snapshot already current:", snap.products.length);
+            }
+          '
+
       - name: Verify output
         run: |
           test -f out/index.html || { echo "::error::out/index.html missing"; exit 1; }

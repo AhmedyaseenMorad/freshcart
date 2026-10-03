@@ -1,3 +1,4 @@
+import ROUTE_IDS from "@/data/route-ids.json";
 import type {
   Address,
   Brand,
@@ -72,20 +73,35 @@ export function getToken(): string | null {
 }
 
 /**
- * Build-time helpers used by `generateStaticParams`. The static export has to know every
- * dynamic route up front, so these run once during `next build` and hit the API with a
- * long-lived cache instead of the per-request behaviour used at runtime.
+ * Build-time helpers used by `generateStaticParams`. A static export has to know every
+ * dynamic route up front, so these run once during `next build`.
+ *
+ * The live API is the source of truth, but it is not reachable from every build
+ * environment — GitHub's runners time out against ecommerce.routemisr.com, which fails
+ * the whole export at the page-data step. So when the fetch fails we fall back to the
+ * checked-in snapshot in `src/data/route-ids.json`. That keeps CI deterministic and
+ * means a flaky third-party host can never break a deploy; only genuinely new products
+ * need the snapshot refreshed.
  */
-async function staticIds(path: string, limit: number) {
-  const res = await fetch(`${BASE}/${path}?limit=${limit}`, { cache: "force-cache" });
-  const json = await parse<{ data?: { _id?: string }[] }>(res);
-  return (json.data ?? [])
-    .map((row) => row?._id)
-    .filter((id): id is string => typeof id === "string" && id.length > 0);
+async function staticIds(path: string, limit: number, fallback: string[]) {
+  try {
+    const res = await fetch(`${BASE}/${path}?limit=${limit}`, {
+      cache: "force-cache",
+      signal: AbortSignal.timeout(15_000),
+    });
+    const json = await parse<{ data?: { _id?: string }[] }>(res);
+    const ids = (json.data ?? [])
+      .map((row) => row?._id)
+      .filter((id): id is string => typeof id === "string" && id.length > 0);
+    if (ids.length > 0) return ids;
+  } catch {
+    // fall through to the snapshot
+  }
+  return fallback;
 }
 
-export const getStaticProductIds = () => staticIds("products", 200);
-export const getStaticCategoryIds = () => staticIds("categories", 100);
+export const getStaticProductIds = () => staticIds("products", 200, ROUTE_IDS.products);
+export const getStaticCategoryIds = () => staticIds("categories", 100, ROUTE_IDS.categories);
 
 /**
  * The live API returns pagination as `{ results, metadata: { currentPage, numberOfPages, limit } }`
