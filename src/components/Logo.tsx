@@ -1,5 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
+/**
+ * Renders a single <img> and swaps `src` with the active theme.
+ *
+ * Two stacked <img> elements (one light, one dark) is the usual trick, but it puts two
+ * copies in the DOM and makes the wordmark appear doubled whenever the visibility rules
+ * fail to apply. Deciding in JS keeps exactly one node mounted at all times.
+ */
 export default function Logo({
   className = "",
   imgClassName = "h-6 lg:h-8 w-auto",
@@ -9,26 +19,26 @@ export default function Logo({
   imgClassName?: string;
   href?: string;
 }) {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => setDark(root.classList.contains("dark"));
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <Link href={href} className={className} aria-label="FreshCart home">
-      {/* Two identical SVGs: the wordmark is dark navy, which is unreadable on the
-          dark header/footer surfaces, so dark mode swaps in the light variant. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/freshcart-logo.svg"
+        src={dark ? "/freshcart-logo-dark.svg" : "/freshcart-logo.svg"}
         alt="FreshCart"
         width={160}
         height={31}
-        className={`logo-variant logo-variant-light ${imgClassName}`}
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/freshcart-logo-dark.svg"
-        alt=""
-        aria-hidden="true"
-        width={160}
-        height={31}
-        className={`logo-variant logo-variant-dark ${imgClassName}`}
+        className={imgClassName}
       />
     </Link>
   );
