@@ -1,10 +1,6 @@
 # FreshCart 🛒
 
-متجر إلكتروني متكامل مبني بـ **Next.js 16** و **React 19**، متصل مباشرة بــ [Route E-commerce API](https://ecommerce.routemisr.com).
-
-المشروع بياخد تصميمه من الديمو الأصلي [freshcart-route.vercel.app](https://freshcart-route.vercel.app)، مع دعم كامل للغة الإنجليزية (LTR) والوضع الداكن.
-
----
+متجر إلكتروني متكامل مبني بـ **Next.js 16** و **React 19**،ـ [Route E-commerce API](https://ecommerce.routemisr.com).
 
 ## 🔗 الديمو
 
