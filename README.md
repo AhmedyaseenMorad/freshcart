@@ -3,10 +3,8 @@
 متجر إلكتروني متكامل مبني بـ **Next.js 16** و **React 19**.
 
 ## 🔗 الديمو
+https://freshcart-dun-nine.vercel.app
 
-**https://freshcart-dun-nine.vercel.app**
-
----
 
 ## ✨ المميزات
 
