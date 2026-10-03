@@ -64,8 +64,13 @@ export default function ProductDetailPage() {
     return uniq.map((u) => ({ original: u, thumbnail: u }));
   }, [product]);
 
-  const price = product ? (product.priceAfterDiscount ?? product.price) : 0;
-  const old = product?.priceAfterDiscount ? product.price : undefined;
+  const hasDiscount =
+    !!product &&
+    typeof product.priceAfterDiscount === "number" &&
+    product.priceAfterDiscount < product.price;
+  const price = product ? (hasDiscount ? product.priceAfterDiscount! : product.price) : 0;
+  const old = hasDiscount ? product.price : undefined;
+  const savedPercent = hasDiscount ? Math.round((1 - product.priceAfterDiscount! / product.price) * 100) : 0;
   const total = price * qty;
 
   const addToCart = async (goToCart: boolean) => {
@@ -183,15 +188,11 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="mb-6 flex items-center flex-wrap gap-3">
-            <span className="text-3xl font-bold text-fg">
-              {product.priceAfterDiscount ?? product.price} EGP
-            </span>
-            {old !== undefined && (
-              <span className="text-lg text-fg-subtle line-through">{old} EGP</span>
-            )}
-            {product.priceAfterDiscount && (
+            {old !== undefined && <span className="text-lg text-fg-subtle line-through">{old} EGP</span>}
+            <span className="text-3xl font-bold text-primary-600">{price} EGP</span>
+            {hasDiscount && (
               <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-500">
-                SAVE {Math.round((1 - product.priceAfterDiscount / product.price) * 100)}%
+                SAVE {savedPercent}%
               </span>
             )}
           </div>

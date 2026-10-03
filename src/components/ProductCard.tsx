@@ -18,8 +18,9 @@ export default function ProductCard({ product, className = "" }: { product: Prod
   const [comparison, setComparison] = useState(false);
 
   const wished = has(product._id);
-  const price = product.priceAfterDiscount ?? product.price;
-  const old = product.priceAfterDiscount ? product.price : undefined;
+  const hasDiscount = typeof product.priceAfterDiscount === "number" && product.priceAfterDiscount < product.price;
+  const price = hasDiscount ? product.priceAfterDiscount! : product.price;
+  const old = hasDiscount ? product.price : undefined;
   const out = product.quantity <= 0;
 
   const onAdd = async () => {
@@ -61,10 +62,16 @@ export default function ProductCard({ product, className = "" }: { product: Prod
             loading="lazy"
           />
         </Link>
-        {out && (
+        {out ? (
           <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-[10px] font-semibold uppercase text-white">
             Sold Out
           </span>
+        ) : (
+          hasDiscount && (
+            <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-[10px] font-semibold uppercase text-white">
+              Sale
+            </span>
+          )
         )}
         <div className="absolute right-3 top-3 flex flex-col space-y-2">
           <button
@@ -111,9 +118,18 @@ export default function ProductCard({ product, className = "" }: { product: Prod
           </span>
         </div>
         <div className="mt-auto flex items-center justify-between">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-fg">{price} EGP</span>
-            {old !== undefined && <span className="text-sm text-fg-subtle line-through">{old} EGP</span>}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              {old !== undefined && <span className="text-sm text-fg-subtle line-through">{old} EGP</span>}
+              <span className={`font-bold text-fg ${old !== undefined ? "text-primary-600" : "text-lg"}`}>
+                {price} EGP
+              </span>
+            </div>
+            {old !== undefined && (
+              <span className="inline-flex w-fit items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-500">
+                Save {Math.round((1 - product.priceAfterDiscount! / product.price) * 100)}%
+              </span>
+            )}
           </div>
           <button
             onClick={onAdd}

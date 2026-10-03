@@ -17,7 +17,14 @@ export default function DealsPage() {
     let active = true;
     api
       .getProducts("limit=150")
-      .then((r) => active && setItems(r.data.filter((p) => p.priceAfterDiscount)))
+      .then((r) =>
+        active &&
+        setItems(
+          r.data.filter(
+            (p) => typeof p.priceAfterDiscount === "number" && p.priceAfterDiscount < p.price
+          )
+        )
+      )
       .catch((e) => active && setError(errMsg(e)))
       .finally(() => active && setLoading(false));
     return () => {
