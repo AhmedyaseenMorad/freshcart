@@ -8,10 +8,8 @@
 
 ## 🔗 الديمو
 
-> **TODO:** حط هنا لينك الديمو بعد النشر
->
 > ```text
-> https://freshcart-xxxx.vercel.app
+> hfreshcart-dun-nine.vercel.app
 > ```
 
 ---
