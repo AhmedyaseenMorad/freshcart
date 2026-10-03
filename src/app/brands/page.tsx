@@ -2,8 +2,6 @@ import Link from "next/link";
 import { api, img } from "@/lib/api";
 import { Ico } from "@/components/Icons";
 
-export const revalidate = 300;
-
 export default async function BrandsPage() {
   const res = await api.getBrands(1, 40);
 

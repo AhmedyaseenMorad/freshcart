@@ -7,8 +7,6 @@ import Reveal from "@/components/Reveal";
 import NewsletterForm from "@/components/NewsletterForm";
 import { Ico } from "@/components/Icons";
 
-export const revalidate = 300;
-
 const usp = [
   { icon: "truck" as const, bg: "bg-blue-50", fg: "text-blue-500", title: "Free Delivery", sub: "On orders above 500 EGP" },
   { icon: "shield" as const, bg: "bg-emerald-50", fg: "text-emerald-500", title: "Secure Payments", sub: "100% protected checkout" },

@@ -61,7 +61,7 @@ async function http<T>(
         : opts.body
           ? JSON.stringify(opts.body)
           : undefined,
-    cache: "no-store",
+    cache: typeof window === "undefined" ? "force-cache" : "no-store",
   });
   return parse<T>(res);
 }
@@ -70,6 +70,22 @@ export function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("fc_token");
 }
+
+/**
+ * Build-time helpers used by `generateStaticParams`. The static export has to know every
+ * dynamic route up front, so these run once during `next build` and hit the API with a
+ * long-lived cache instead of the per-request behaviour used at runtime.
+ */
+async function staticIds(path: string, limit: number) {
+  const res = await fetch(`${BASE}/${path}?limit=${limit}`, { cache: "force-cache" });
+  const json = await parse<{ data?: { _id?: string }[] }>(res);
+  return (json.data ?? [])
+    .map((row) => row?._id)
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
+}
+
+export const getStaticProductIds = () => staticIds("products", 200);
+export const getStaticCategoryIds = () => staticIds("categories", 100);
 
 /**
  * The live API returns pagination as `{ results, metadata: { currentPage, numberOfPages, limit } }`
