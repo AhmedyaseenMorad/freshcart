@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a newer run supersede an in-flight one instead of queueing behind it.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export
+        run: npm run build
+        env:
+          # next.config.ts reads this to add basePath=/freshcart and assetPrefix.
+          GITHUB_PAGES: "1"
+
+      - name: Verify output
+        run: |
+          test -f out/index.html || { echo "::error::out/index.html missing"; exit 1; }
+          echo "html files: $(find out -name '*.html' | wc -l)"
+          echo "product pages: $(find out/products -mindepth 1 -maxdepth 1 -type d | wc -l)"
+          echo "category pages: $(find out/categories -mindepth 1 -maxdepth 1 -type d | wc -l)"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

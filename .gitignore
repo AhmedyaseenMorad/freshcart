@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+# Next leaves a stale export here when a later build runs without output:"export"
 /out/
 
 # production
