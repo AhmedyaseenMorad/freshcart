@@ -1,34 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreshCart 🛒
 
-## Getting Started
+متجر إلكتروني متكامل مبني بـ **Next.js 16** و **React 19**، متصل مباشرة بــ [Route E-commerce API](https://ecommerce.routemisr.com).
 
-First, run the development server:
+المشروع بياخد تصميمه من الديمو الأصلي [freshcart-route.vercel.app](https://freshcart-route.vercel.app)، مع دعم كامل للغة الإنجليزية (LTR) والوضع الداكن.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🔗 الديمو
+
+> **TODO:** حط هنا لينك الديمو بعد النشر
+>
+> ```text
+> https://freshcart-xxxx.vercel.app
+> ```
+
+---
+
+## ✨ المميزات
+
+| الميزة | الوصف |
+|---|---|
+| 🌙 **الوضع الداكن** | زرار تبديل (لايت/دارك) بيتحفظ في `localStorage`، بيشتغل قبل رسم الصفحة من غير وميض أبيض (No FOUC) |
+| 🔎 **سيرش ذكي** | بحث في اسم المنتج أو الماركة أو الكاتيجوري — شغال client-side لأن الـ API الرسمي بيرجع صفر نتايج للبحث |
+| 🛒 **سلة تسوق** | مربوطة بالـ API: إضافة/تعديل/حذف + كوبون خصم + حساب الإجمالي |
+| ❤️ **المفضلة** | إضافة وحذف المنتجات من قائمة المفضلة |
+| 💳 **الدفع أونلاين** | Stripe checkout session + الدفع كاش عند الاستلام |
+| 🖼️ **معرض صور** | `react-image-gallery` مع صور مصغّرة وملء الشاشة |
+| 🎠 **سلايدر** | `swiper` للبانر الرئيسي مع pagination |
+| 📄 **19 صفحة** | الرئيسية، المنتجات، التصنيفات، البراندز، العروض، السلة، الدفع، الحساب، الطلبات، التواصل… |
+| 🔐 **مصادقة** | تسجيل / دخول / استعادة كلمة المرور + حماية صفحات |
+| 📱 **متجاوب** | من غير أي media query — تصميم Mobile-first كامل |
+
+---
+
+## 🛠️ التقنيات
+
+```
+Next.js 16 (App Router + Turbopack)
+React 19
+TypeScript
+Tailwind CSS v4
+React Hot Toast        ← التنبيهات
+Swiper                ← السلايدر
+React Image Gallery   ← معرض الصور
+FontAwesome 7         ← الأيقونات
 ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 التشغيل
 
-## Learn More
+### المتطلبات
+- **Node.js 20** أو أحدث
+- **npm**
 
-To learn more about Next.js, take a look at the following resources:
+### الخطوات
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# 1. تنزيل الحزم
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 2. تشغيل سيرفر التطوير
+npm run dev
+```
 
-## Deploy on Vercel
+### أوامر تانية
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build      # نسخة الإنتاج
+npm run start      # تشغيل نسخة الإنتاج
+npm run lint       # فحص الكود
+npx tsc --noEmit   # فحص الأنواع
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔌 الـ API
+
+المشروع كله معتمد على [Route Academy E-commerce API](https://ecommerce.routemisr.com/api/v1) — مافيش backend خاص.
+
+| الميزة | الـ Endpoint |
+|---|---|
+| المنتجات | `GET /api/v1/products` |
+| التصنيفات | `GET /api/v1/categories` |
+| البراندز | `GET /api/v1/brands` |
+| تسجيل / دخول | `POST /api/v1/auth/signup` · `POST /api/v1/auth/signin` |
+| السلة | `/api/v2/cart` |
+| الدفع أونلاين | `POST /api/v1/orders/checkout-session/:cartId` |
+| الدفع كاش | `POST /api/v2/orders/:cartId` |
+
+> **ملحوظة مهمة:** التوكن بيخزن في `localStorage` تحت المفتاح `fc_token` — مش في أي متغيرات بيئة، فمفيش حاجة تعملها `.env`.
+
+---
+
+## 🗂️ هيكل المشروع
+
+```
+src/
+├── app/
+│   ├── page.tsx           # الرئيسية
+│   ├── products/          # المنتجات + صفحة المنتج
+│   ├── categories/        # التصنيفات
+│   ├── brands/            # البراندز
+│   ├── deals/             # العروض
+│   ├── cart/              # السلة
+│   ├── checkout/          # الدفع
+│   ├── login/ register/   # المصادقة
+│   ├── profile/           # الحساب + الطلبات
+│   └── globals.css        # الألوان والتايبزينج
+├── components/            # الهيدر، الفوتر،等产品، الفوتر، إلخ
+└── lib/
+    ├── api.ts             # طبقة الاتصال بالـ API
+    ├── store.tsx          # الحالة العامة + التنبيهات
+    └── types.ts           # أنواع TypeScript
+```
+
+---
+
+## 🚀 النشر
+
+الأسهل عن طريق [Vercel](https://vercel.com/new):
+
+1. افتح <https://vercel.com/new>
+2. اضغط **Continue with GitHub**
+3. اختار الريبو `AhmedyaseenMorad/freshcart`
+4. اضغط **Deploy**
+
+✅ مفيش أي إعدادات تانية — Vercel بي autodetect Next.js، وكل `git push` جديد بينشر لوحده.
+
+> ⚠️ **مش متاح على GitHub Pages** — الموقع فيه صفحات SSR، وPages بيخدم ملفات ثابتة بس.
+
+---
+
+## 👤 المؤلف
+
+**AhmedyaseenMorad** — [github.com/AhmedyaseenMorad](https://github.com/AhmedyaseenMorad)
